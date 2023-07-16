@@ -75,49 +75,66 @@ export const dashboard = defineStore({
                 }
             })
             
-            console.log("Active index",this.activeIndex)
             this.updatePositions()
         },
         update2ElementsDashboard(layoutType = "A" as string) {
+
+            if (!this.container)  {
+                console.warn("No dashboard container set, can't update positions")
+                return
+            }
+
+            const width = this.container.clientWidth
+            const height = this.container.clientHeight
+
             const positions = _.map(this.elements, (el, index) => {
 
+                const size = 128
                 const position = {
                     width:  0,
                     height: 0,
                     left:   0,
                     top:    0,
-                    unit: "%",
+                    unit: "px",
                     element: el,
                 } as DashboardPosition
+                switch (index) {
+                case 0:
+                    position.top    = this.orientation == "portrait" ? 0 : 0
+                    position.left   = this.orientation == "portrait" ? 0 : 0
+                    position.width  = this.orientation == "portrait" ? width : width/2
+                    position.height = this.orientation == "portrait" ? height/2: height
+                    if (this.activeIndex == 0) {
+                        position.top    = this.orientation == "portrait" ? 0 : 0
+                        position.left   = this.orientation == "portrait" ? 0 : 0
+                        position.width  = this.orientation == "portrait" ? width : width-size
+                        position.height = this.orientation == "portrait" ? height-size : height
+                    } else if(this.activeIndex == 1) {
+                        position.top    = this.orientation == "portrait" ? 0 : 0
+                        position.left   = this.orientation == "portrait" ? 0 : 0
+                        position.width  = this.orientation == "portrait" ? width : size
+                        position.height = this.orientation == "portrait" ? size : height
+                    } 
+                    break
+                case 1:
+                    position.left   = this.orientation == "portrait" ? 0 : width/2
+                    position.top    = this.orientation == "portrait" ? height/2 : 0
+                    position.width  = this.orientation == "portrait" ? width : width/2
+                    position.height = this.orientation == "portrait" ? height/2 : height
 
-
-                if (this.activeElement) {
-                    switch (index) {
-                    case 0:
-                        if (el.classList.contains("__isActive")) {
-                            position.width  = this.orientation == "portrait" ? 100 : 80
-                            position.height = this.orientation == "portrait" ? 80 : 100
-                        } else {
-                            position.width  = this.orientation == "portrait" ? 100 : 20
-                            position.height = this.orientation == "portrait" ? 20 : 100
-                        }
-                        break
-                    case 1:
-                        if (el.classList.contains("__isActive")) {
-                            position.left = this.orientation == "portrait" ? 0 : 20
-                            position.top = this.orientation == "portrait" ? 20 : 0
-                            position.width  = this.orientation == "portrait" ? 100 : 80
-                            position.height = this.orientation == "portrait" ? 80 : 100
-                        } else {
-                            position.left = this.orientation == "portrait" ? 0 : 80
-                            position.top = this.orientation == "portrait" ? 80 : 0
-                            position.width  = this.orientation == "portrait" ? 100 : 20
-                            position.height = this.orientation == "portrait" ? 20 : 100
-                        }
-                        break
+                    if (this.activeIndex == 0) {
+                        position.top    = this.orientation == "portrait" ? height-size : 0
+                        position.left   = this.orientation == "portrait" ? 0 : width-size
+                        position.width  = this.orientation == "portrait" ? width : size
+                        position.height = this.orientation == "portrait" ? size : height
+                    } else if(this.activeIndex == 1) {
+                        position.top    = this.orientation == "portrait" ? size : 0
+                        position.left   = this.orientation == "portrait" ? 0 : size
+                        position.width  = this.orientation == "portrait" ? width : width-size
+                        position.height = this.orientation == "portrait" ? height-size : height
                     }
+                    break
                 }
-
                 return position
             })
             this.animatePositions(positions)
