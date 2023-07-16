@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
-import _, { size } from "lodash"
+import _ from "lodash"
 import gsap from "gsap"
+import {DashboardPosition} from "@/types/dashboard"
 
 export const dashboard = defineStore({
     id: "dashboard",
@@ -79,13 +80,15 @@ export const dashboard = defineStore({
         },
         update2ElementsDashboard(layoutType = "A" as string) {
             const positions = _.map(this.elements, (el, index) => {
+
                 const position = {
-                    width:this.orientation == "portrait" ? 100 : 50 as number | string,
-                    height: this.orientation == "portrait" ? 50 : 100 as number | string,
-                    left: this.orientation == "portrait" ? 0 : 100/2*index as number | string,
-                    top: this.orientation == "portrait" ? 100/2*index: 0 as number | string,
+                    width:  0,
+                    height: 0,
+                    left:   0,
+                    top:    0,
+                    unit: "%",
                     element: el,
-                }
+                } as DashboardPosition
 
 
                 if (this.activeElement) {
@@ -123,14 +126,14 @@ export const dashboard = defineStore({
           
             const positions = _.map(this.elements, (el, index) => {
 
-                
                 const position = {
-                    width:  this.orientation == "portrait" ? 0 : 0 as number | string,
-                    height: this.orientation == "portrait" ? 0 : 0 as number | string,
-                    left:   this.orientation == "portrait" ? 0 : 0 as number | string,
-                    top:    this.orientation == "portrait" ? 0: 0 as number | string,
+                    width:  0,
+                    height: 0,
+                    left:   0,
+                    top:    0,
+                    unit: "%",
                     element: el,
-                }
+                } as DashboardPosition
 
                 if (layoutType == "A") {
                     switch (index) {
@@ -294,12 +297,13 @@ export const dashboard = defineStore({
             const positions = _.map(this.elements, (el, index) => {
                 
                 const position = {
-                    width:  this.orientation == "portrait" ? 0 : 0 as number | string,
-                    height: this.orientation == "portrait" ? 0 : 0 as number | string,
-                    left:   this.orientation == "portrait" ? 0 : 0 as number | string,
-                    top:    this.orientation == "portrait" ? 0: 0 as number | string,
+                    width:  0,
+                    height: 0,
+                    left:   0,
+                    top:    0,
+                    unit: "%",
                     element: el,
-                }
+                } as DashboardPosition
 
                 if (layoutType == "A") { 
                     const size = 100/3
@@ -551,20 +555,15 @@ export const dashboard = defineStore({
             this.activeElement = null
             this.updatePositions()
         },
-        animatePositions(positions: {
-            width: number | string,
-            height: number | string,
-            left: number | string,
-            top: number | string,
-            element: HTMLElement,
-        }[]) {
+        animatePositions(positions: DashboardPosition[]) {
             _.forEach(positions, (posData) => {
                 this.inTransition = true
+
                 gsap.to(posData.element, {
-                    width: `${posData.width}%`,
-                    height: `${posData.height}%`,
-                    left: `${posData.left}%`,
-                    top: `${posData.top}%`,
+                    top:    posData.unit == "px" ? `${posData.top}px`   : `${posData.top}%`,
+                    left:   posData.unit == "px" ? `${posData.left}px`  : `${posData.left}%`,
+                    width:  posData.unit == "px" ? `${posData.width}px` : `${posData.width}%`,
+                    height: posData.unit == "px" ? `${posData.height}px`: `${posData.height}%`,
                     ease: this.animationEasing,
                     duration: this.animationDuration, 
                     onComplete: () => {

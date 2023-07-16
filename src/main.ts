@@ -1,6 +1,5 @@
 import { createApp } from "vue"
 import { createPinia } from "pinia"
-import router from "./routes"
 document.title = import.meta.env.VITE_PAGE_TITLE
 
 
@@ -10,5 +9,4 @@ const pinia = createPinia()
 
 createApp(App)
     .use(pinia)
-    .use(router)
     .mount("#app")
